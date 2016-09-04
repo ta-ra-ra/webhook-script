@@ -97,26 +97,25 @@ $to = $data->pull_request->base->ref;
 // head: pull request元ブランチ
 $from = $data->pull_request->head->ref;
 
-$log = 'webhook-' . date('YmdHis') . '.log';
-
 // develop へのマージ
 if ($to === 'develop') {
     $path = $config['dev'];
-    
     $cmd = "cd $path;"
         . "git fetch origin;"
-        . "git merge origin/develop --no-commit &> $log;";
-    system($cmd);
-    echo file_get_contents($log);
+        . "git merge origin/develop --no-commit;";
+    $output = [];
+    exec($cmd, $output);
+    var_dump($output);
 
 // master へのマージ(hotfixのみ)
 } elseif ($to === 'master' && $from === 'hotfix') {
     $path = $config['prd'];
     $cmd = "cd $path;"
         . "git fetch origin;"
-        . "git merge origin/master --no-commit &> $log;";
-    system($cmd);
-    echo file_get_contents($log);
+        . "git merge origin/master --no-commit;";
+    $output = [];
+    exec($cmd, $output);
+    var_dump($output);
 
 } else {
     die('Not target branch');
