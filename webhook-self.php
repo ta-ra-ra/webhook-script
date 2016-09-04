@@ -27,6 +27,8 @@ if ($hash !== $payloadHash) {
 $data = json_decode($payload);
 
 $cmd = "git pull";
-$output = '';
+$output = [];
 exec($cmd, $output);
-var_dump($output);
+foreach ($output as $line) {
+    echo $line . PHP_EOL;
+}
