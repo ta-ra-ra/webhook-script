@@ -29,6 +29,4 @@ $data = json_decode($payload);
 $cmd = "git pull";
 $output = [];
 exec($cmd, $output);
-foreach ($output as $line) {
-    echo $line . PHP_EOL;
-}
+var_dump($output);
