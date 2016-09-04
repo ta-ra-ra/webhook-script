@@ -57,7 +57,7 @@ if ('pull_request' !== $headers['x-github-event']) {
 }
 
 // 認証処理
-// @see http://isometriks.com/verify-github-webhooks-with-php
+// @see http://isometriks.com/verqify-github-webhooks-with-php
 $hubSignature = $headers['x-hub-signature'];
 
 // Split signature into algorithm and hash
@@ -78,7 +78,11 @@ if ($hash !== $payloadHash) {
 // Your code here.
 $data = json_decode($payload);
 
-$config = $configs[$data->repo->name];
+if (empty($configs['repo'][$data->repository->name])) {
+    die('Repositoy Not Found');
+}
+
+$config = $configs['repo'][$data->repository->name];
 
 // pull requestがマージされた場合に実行する
 // マージの判定は、action: closed かつ merged: true
@@ -100,9 +104,7 @@ $from = $data->pull_request->head->ref;
 // develop へのマージ
 if ($to === 'develop') {
     $path = $config['dev'];
-    $cmd = "cd $path;"
-        . "git fetch origin;"
-        . "git merge origin/develop --no-commit;";
+    $cmd = "cd $path; git pull;";
     $output = [];
     exec($cmd, $output);
     var_dump($output);
@@ -110,9 +112,7 @@ if ($to === 'develop') {
 // master へのマージ(hotfixのみ)
 } elseif ($to === 'master' && $from === 'hotfix') {
     $path = $config['prd'];
-    $cmd = "cd $path;"
-        . "git fetch origin;"
-        . "git merge origin/master --no-commit;";
+    $cmd = "cd $path; git pull;";
     $output = [];
     exec($cmd, $output);
     var_dump($output);
